@@ -49,7 +49,11 @@
             <p style="color: #aaa; font-size: 12px; margin-top: 0;">Deja tu correo para recibir un aviso de inversión instantáneo.</p>
             
             <form id="form-cliente">
-                <input type="email" id="correo-usuario" placeholder="tu-correo@gmail.com" required>
+                <input type="hidden" name="_subject" id="hidden-asunto" value="Nuevo Lead: Spark Monitor">
+                <input type="hidden" name="Precio_Bitcoin" id="hidden-precio">
+                <input type="hidden" name="Reporte_IA" id="hidden-ia">
+                
+                <input type="email" id="correo-usuario" name="Correo_Cliente" placeholder="tu-correo@gmail.com" required>
                 <button type="submit" id="btn-enviar">Activar Alertas de Inversión</button>
             </form>
         </div>
@@ -63,7 +67,7 @@
         const cajaRegistro = document.getElementById('caja-registro');
         const botonEnviar = document.getElementById('btn-enviar');
 
-        // Tu link real de Formspree
+        // URL de Formspree
         const FORMSPREE_URL = "https://formspree.io/f/xgobgnyy";
 
         let precioAnterior = 0;
@@ -75,20 +79,20 @@
             
             if (precioAnterior === 0) {
                 tendencia = "estabilizándose en rangos óptimos.";
-                recomendacion = "Mantener posiciones estables y observar zonas de liquidez.";
+                recommendacion = "Mantener posiciones estables y observar zonas de liquidez.";
             } else if (precioActual > precioAnterior) {
                 tendencia = "con un impulso alcista de alta velocidad.";
-                recomendacion = "⚠️ Alerta de volatilidad positiva. Momento para proteger stop-loss.";
+                recommendacion = "⚠️ Alerta de volatilidad positiva. Momento para proteger stop-loss.";
             } else if (precioActual < precioAnterior) {
                 tendencia = "experimentando una corrección técnica de mercado.";
-                recomendacion = "🛑 Soporte bajo análisis. Monitorear rebotación de volumen.";
+                recommendacion = "🛑 Soporte bajo análisis. Monitorear rebotación de volumen.";
             } else {
                 tendencia = "en consolidación lateral comprimida.";
-                recomendacion = "Baja volatilidad. Acumulación de órdenes en curso.";
+                recommendacion = "Baja volatilidad. Acumulación de órdenes en curso.";
             }
 
             precioAnterior = precioActual;
-            return `[Reporte Automático] El precio se encuentra en $${precioActual.toLocaleString()} USD, ${tendencia} Análisis algorítmico: ${recomendacion}`;
+            return `[Reporte Automático] El precio se encuentra en $${precioActual.toLocaleString()} USD, ${tendencia} Análisis algorítmico: ${recommendacion}`;
         }
 
         // 2. CONSULTA EN TIEMPO REAL (Binance)
@@ -113,29 +117,28 @@
             }
         }
 
-        // 3. ENVÍO DE DATOS REALES POR API ENRIQUECIDA
+        // 3. ENVÍO DE FORMULARIO REAL CON DATOS INYECTADOS
         formulario.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const correo = document.getElementById('correo-usuario').value;
             
-            // 🚨 AQUÍ ESTÁ EL TRUCO: Capturamos lo que hay en pantalla antes de enviar
             const precioCapturado = elementoPrecio.innerText;
             const reporteIaCapturado = elementoIA.innerText;
+            
+            // Inyectamos físicamente los datos en los inputs ocultos antes de enviar
+            document.getElementById('hidden-asunto').value = `🔥 ¡Nuevo Lead Premium! BTC: ${precioCapturado}`;
+            document.getElementById('hidden-precio').value = precioCapturado;
+            document.getElementById('hidden-ia').value = reporteIaCapturado;
             
             botonEnviar.innerText = "⚡ CONECTANDO SERVIDOR...";
             botonEnviar.disabled = true;
 
             try {
+                // Enviamos todo el paquete como un formulario nativo (FormData)
+                // Esto hace que Formspree dibuje los datos sí o sí en el correo
                 const respuestaEnvio = await fetch(FORMSPREE_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    // Metemos el precio y el reporte de la IA dentro del paquete JSON
-                    body: JSON.stringify({ 
-                        email: correo, 
-                        _subject: `🔥 ¡Nuevo Lead Premium! BTC: ${precioCapturado}`, 
-                        precio_de_registro: precioCapturado,
-                        analisis_ia_enviado: reporteIaCapturado
-                    })
+                    body: new FormData(formulario),
+                    headers: { 'Accept': 'application/json' }
                 });
 
                 if (respuestaEnvio.ok) {
@@ -143,7 +146,7 @@
                         <div style="text-align: center; color: #00ffcc; font-weight: bold; font-size: 14px;">
                             ✅ ¡SISTEMA ACTIVADO!<br>
                             <span style="color: #fff; font-size: 12px; font-weight: normal;">
-                                El correo <strong>${correo}</strong> ha sido indexado correctamente. Revisa tu bandeja.
+                                Tus datos y el precio actual han sido indexados correctamente. Revisa tu bandeja.
                             </span>
                         </div>
                     `;
