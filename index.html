@@ -63,32 +63,32 @@
         const cajaRegistro = document.getElementById('caja-registro');
         const botonEnviar = document.getElementById('btn-enviar');
 
-        // REEMPLAZA ESTA URL CON LA QUE TE DA FORMSPREE
-        const FORMSPREE_URL = "AQUÍ_PEGA_TU_ENLACE_DE_FORMSPREE";
+        // ⚠️ ATENCIÓN: Pega tu link dentro de las comillas obligatoriamente
+        const FORMSPREE_URL = "AQUÍ_PEGA_TU_LINK_DE_FORMSPREE";
 
         let precioAnterior = 0;
 
-        // 1. MOTOR DE IA LOCAL
+        // 1. MOTOR DE IA CORREGIDO (Sin errores de variables)
         function generarAnalisisIA(precioActual) {
             let tendencia = "";
             let recomendacion = "";
             
             if (precioAnterior === 0) {
                 tendencia = "estabilizándose en rangos óptimos.";
-                recommendacion = "Mantener posiciones estables y observar zonas de liquidez.";
+                recomendacion = "Mantener posiciones estables y observar zonas de liquidez.";
             } else if (precioActual > precioAnterior) {
                 tendencia = "con un impulso alcista de alta velocidad.";
-                recommendacion = "⚠️ Alerta de volatilidad positiva. Momento para proteger stop-loss.";
+                recomendacion = "⚠️ Alerta de volatilidad positiva. Momento para proteger stop-loss.";
             } else if (precioActual < precioAnterior) {
                 tendencia = "experimentando una corrección técnica de mercado.";
-                recommendacion = "🛑 Soporte bajo análisis. Monitorear rebotación de volumen.";
+                recomendacion = "🛑 Soporte bajo análisis. Monitorear rebotación de volumen.";
             } else {
                 tendencia = "en consolidación lateral comprimida.";
-                recommendacion = "Baja volatilidad. Acumulación de órdenes en curso.";
+                recomendacion = "Baja volatilidad. Acumulación de órdenes en curso.";
             }
 
             precioAnterior = precioActual;
-            return `[Reporte Automático] El precio se encuentra en $${precioActual.toLocaleString()} USD, ${tendencia} Análisis algorítmico: ${recommendacion}`;
+            return `[Reporte Automático] El precio se encuentra en $${precioActual.toLocaleString()} USD, ${tendencia} Análisis algorítmico: ${recomendacion}`;
         }
 
         // 2. CONSULTA EN TIEMPO REAL
@@ -113,7 +113,7 @@
             }
         }
 
-        // 3. ENVÍO DE DATOS REALES POR API ASÍNCRONA
+        // 3. ENVÍO DE DATOS REALES POR API
         formulario.addEventListener('submit', async function(e) {
             e.preventDefault();
             const correo = document.getElementById('correo-usuario').value;
@@ -122,11 +122,10 @@
             botonEnviar.disabled = true;
 
             try {
-                // Mandamos el correo de verdad a Formspree usando Fetch API en segundo plano
                 const respuestaEnvio = await fetch(FORMSPREE_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ email: correo, proyecto: "Spark Monitor Premium" })
+                    body: JSON.stringify({ email: correo, _subject: "Nuevo Lead: Spark Monitor" })
                 });
 
                 if (respuestaEnvio.ok) {
@@ -147,6 +146,7 @@
             }
         });
 
+        // Inicializar
         actualizarDashboard();
         setInterval(actualizarDashboard, 6000);
     </script>
