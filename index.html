@@ -23,8 +23,6 @@
         input[type="email"] { background: #0d0e15; border: 1px solid #00ffcc; padding: 10px; color: white; border-radius: 4px; width: 91%; margin-bottom: 10px; font-size: 14px; }
         button { background: #00ffcc; color: #0d0e15; border: none; padding: 10px; font-weight: bold; border-radius: 4px; width: 100%; cursor: pointer; font-size: 14px; transition: 0.2s; }
         button:hover { background: #fffb00; }
-
-        .alerta-activa { background-color: #400c16 !important; }
     </style>
 </head>
 <body>
@@ -48,11 +46,11 @@
 
         <div class="formulario-box" id="caja-registro">
             <div class="form-titulo">📩 Suscríbete a Alertas Premium</div>
-            <p style="color: #aaa; font-size: 12px; margin-top: 0;">Deja tu correo para recibir un aviso al celular si el mercado colapsa.</p>
+            <p style="color: #aaa; font-size: 12px; margin-top: 0;">Deja tu correo para recibir un aviso de inversión instantáneo.</p>
             
             <form id="form-cliente">
                 <input type="email" id="correo-usuario" placeholder="tu-correo@gmail.com" required>
-                <button type="submit">Activar Alertas de Inversión</button>
+                <button type="submit" id="btn-enviar">Activar Alertas de Inversión</button>
             </form>
         </div>
     </div>
@@ -63,35 +61,37 @@
         const elementoIA = document.getElementById('ia-reporte');
         const formulario = document.getElementById('form-cliente');
         const cajaRegistro = document.getElementById('caja-registro');
+        const botonEnviar = document.getElementById('btn-enviar');
+
+        // REEMPLAZA ESTA URL CON LA QUE TE DA FORMSPREE
+        const FORMSPREE_URL = "AQUÍ_PEGA_TU_ENLACE_DE_FORMSPREE";
 
         let precioAnterior = 0;
 
-        // 1. MOTOR DE INTELIGENCIA ARTIFICIAL INTERNO
+        // 1. MOTOR DE IA LOCAL
         function generarAnalisisIA(precioActual) {
             let tendencia = "";
             let recomendacion = "";
             
             if (precioAnterior === 0) {
                 tendencia = "estabilizándose en rangos óptimos.";
-                recomendacion = "Mantener posiciones estables y observar zonas de liquidez.";
+                recommendacion = "Mantener posiciones estables y observar zonas de liquidez.";
             } else if (precioActual > precioAnterior) {
                 tendencia = "con un impulso alcista de alta velocidad.";
-                recomendacion = "⚠️ Alerta de FOMO. Buen momento para asegurar ganancias parciales.";
+                recommendacion = "⚠️ Alerta de volatilidad positiva. Momento para proteger stop-loss.";
             } else if (precioActual < precioAnterior) {
-                tendencia = "experimentando una corrección técnica de ballenas.";
-                recomendacion = "🛑 Zona de descuento. Monitorear soportes clave antes de buscar entradas.";
+                tendencia = "experimentando una corrección técnica de mercado.";
+                recommendacion = "🛑 Soporte bajo análisis. Monitorear rebotación de volumen.";
             } else {
                 tendencia = "en consolidación lateral comprimida.";
-                recomendacion = "Baja volatilidad. El mercado está acumulando energía para el siguiente quiebre.";
+                recommendacion = "Baja volatilidad. Acumulación de órdenes en curso.";
             }
 
             precioAnterior = precioActual;
-
-            // Retornamos el texto formateado que simula la respuesta de la IA
-            return `[Reporte Automático] El precio de Bitcoin se encuentra en $${precioActual.toLocaleString()} USD, ${tendencia} Análisis algorítmico sugiere: ${recomendacion}`;
+            return `[Reporte Automático] El precio se encuentra en $${precioActual.toLocaleString()} USD, ${tendencia} Análisis algorítmico: ${recommendacion}`;
         }
 
-        // 2. CONEXIÓN A LA API FINANCIERA
+        // 2. CONSULTA EN TIEMPO REAL
         async function actualizarDashboard() {
             try {
                 elementoEstado.innerText = "🔄 PROCESANDO...";
@@ -99,13 +99,11 @@
                 const datos = await respuesta.json();
                 const precioNumerico = parseFloat(datos.data.amount);
 
-                // Actualizar precio en pantalla
                 elementoPrecio.innerText = `$${precioNumerico.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
                 elementoEstado.innerText = "🟢 EN VIVO";
                 elementoEstado.style.color = "#00ffcc";
 
-                // Ejecutar la IA con los nuevos datos
-                const informeFinal = generarAnalisisIA(precioNumerico);
+                const informeFinal = https://formspree.io/f/xgobgnyygenerarAnalisisIA(precioNumerico);
                 elementoIA.innerText = informeFinal;
 
             } catch (error) {
@@ -115,26 +113,40 @@
             }
         }
 
-        // 3. CAPTURA DE DATOS DEL CLIENTE (BASE DE DATOS LOCAL)
-        formulario.addEventListener('submit', function(e) {
-            e.preventDefault(); // Evita que la página se recargue
+        // 3. ENVÍO DE DATOS REALES POR API ASÍNCRONA
+        formulario.addEventListener('submit', async function(e) {
+            e.preventDefault();
             const correo = document.getElementById('correo-usuario').value;
+            
+            botonEnviar.innerText = "⚡ CONECTANDO SERVIDOR...";
+            botonEnviar.disabled = true;
 
-            // Guardamos el correo en la memoria del navegador (Simulación de DB)
-            localStorage.setItem('cliente_premium', correo);
+            try {
+                // Mandamos el correo de verdad a Formspree usando Fetch API en segundo plano
+                const respuestaEnvio = await fetch(FORMSPREE_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ email: correo, proyecto: "Spark Monitor Premium" })
+                });
 
-            // Cambiamos la interfaz para darle las gracias al cliente
-            cajaRegistro.innerHTML = `
-                <div style="text-align: center; color: #00ffcc; font-weight: bold; font-size: 14px;">
-                    ✅ ¡CONEXIÓN EXITOSA!<br>
-                    <span style="color: #fff; font-size: 12px; font-weight: normal;">
-                        El correo <strong>${correo}</strong> ha sido registrado en el nodo de Spark Monitor.
-                    </span>
-                </div>
-            `;
+                if (respuestaEnvio.ok) {
+                    cajaRegistro.innerHTML = `
+                        <div style="text-align: center; color: #00ffcc; font-weight: bold; font-size: 14px;">
+                            ✅ ¡SISTEMA ACTIVADO!<br>
+                            <span style="color: #fff; font-size: 12px; font-weight: normal;">
+                                El correo <strong>${correo}</strong> ha sido indexado correctamente. Revisa tu bandeja.
+                            </span>
+                        </div>
+                    `;
+                } else {
+                    throw new Error();
+                }
+            } catch (error) {
+                botonEnviar.innerText = "❌ ERROR AL REGISTRAR";
+                botonEnviar.disabled = false;
+            }
         });
 
-        // Inicializar y repetir cada 6 segundos
         actualizarDashboard();
         setInterval(actualizarDashboard, 6000);
     </script>
