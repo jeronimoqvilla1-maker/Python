@@ -63,12 +63,12 @@
         const cajaRegistro = document.getElementById('caja-registro');
         const botonEnviar = document.getElementById('btn-enviar');
 
-        // ⚠️ ATENCIÓN: Pega tu link dentro de las comillas obligatoriamente
-        const FORMSPREE_URL = "AQUÍ_PEGA_TU_LINK_DE_FORMSPREE";
+        // Tu link real ya quedó inyectado con comillas correctas aquí:
+        const FORMSPREE_URL = "https://formspree.io/f/xgobgnyy";
 
         let precioAnterior = 0;
 
-        // 1. MOTOR DE IA CORREGIDO (Sin errores de variables)
+        // 1. MOTOR DE IA CORREGIDO
         function generarAnalisisIA(precioActual) {
             let tendencia = "";
             let recomendacion = "";
@@ -103,7 +103,7 @@
                 elementoEstado.innerText = "🟢 EN VIVO";
                 elementoEstado.style.color = "#00ffcc";
 
-                const informeFinal = https://formspree.io/f/xgobgnyygenerarAnalisisIA(precioNumerico);
+                const informeFinal = generarAnalisisIA(precioNumerico);
                 elementoIA.innerText = informeFinal;
 
             } catch (error) {
