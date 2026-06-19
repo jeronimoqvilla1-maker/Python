@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spark Monitor - Executive Dashboard</title>
+    <title>Spark Monitor V2 - Executive Dashboard</title>
     <style>
         body { background-color: #0d0e15; color: #ffffff; font-family: sans-serif; text-align: center; padding: 20px; transition: background 0.5s ease; }
         .tarjeta { background: #161824; border: 1px solid #00ffcc; padding: 30px; border-radius: 12px; display: inline-block; max-width: 500px; text-align: left; box-shadow: 0px 0px 20px rgba(0, 255, 204, 0.1); }
-        h1 { color: #00ffcc; margin: 0 0 5px 0; text-align: center; }
+        h1 { color: #00ffcc; margin: 0 0 5px 0; text-align: center; font-size: 24px; }
         .sub { color: #888; text-align: center; margin-bottom: 20px; font-size: 14px; }
         .precio-box { text-align: center; background: #1f2235; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px; }
         .precio { font-size: 38px; color: #fffb00; font-weight: bold; margin: 5px 0; }
@@ -28,7 +28,7 @@
 <body>
 
     <div id="mi-tarjeta" class="tarjeta">
-        <h1>📊 SPARK MONITOR PRO</h1>
+        <h1>📊 SPARK MONITOR V2</h1>
         <p class="sub">Sistemas Autónomos de Próxima Generación</p>
         
         <div class="precio-box">
@@ -63,12 +63,12 @@
         const cajaRegistro = document.getElementById('caja-registro');
         const botonEnviar = document.getElementById('btn-enviar');
 
-        // Tu link real ya quedó inyectado con comillas correctas aquí:
+        // URL de Formspree inyectada directamente
         const FORMSPREE_URL = "https://formspree.io/f/xgobgnyy";
 
         let precioAnterior = 0;
 
-        // 1. MOTOR DE IA CORREGIDO
+        // 1. MOTOR DE IA LOCAL
         function generarAnalisisIA(precioActual) {
             let tendencia = "";
             let recomendacion = "";
@@ -91,13 +91,13 @@
             return `[Reporte Automático] El precio se encuentra en $${precioActual.toLocaleString()} USD, ${tendencia} Análisis algorítmico: ${recomendacion}`;
         }
 
-        // 2. CONSULTA EN TIEMPO REAL
+        // 2. CONSULTA EN TIEMPO REAL (Optimizada con la API ultra-estable de Binance)
         async function actualizarDashboard() {
             try {
                 elementoEstado.innerText = "🔄 PROCESANDO...";
-                const respuesta = await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot');
+                const respuesta = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
                 const datos = await respuesta.json();
-                const precioNumerico = parseFloat(datos.data.amount);
+                const precioNumerico = parseFloat(datos.price);
 
                 elementoPrecio.innerText = `$${precioNumerico.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
                 elementoEstado.innerText = "🟢 EN VIVO";
@@ -107,7 +107,7 @@
                 elementoIA.innerText = informeFinal;
 
             } catch (error) {
-                elementoPrecio.innerText = "Error de Red";
+                elementoPrecio.innerText = "Error de API";
                 elementoEstado.innerText = "❌ DESCONECTADO";
                 elementoEstado.style.color = "#ff0055";
             }
@@ -125,7 +125,7 @@
                 const respuestaEnvio = await fetch(FORMSPREE_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ email: correo, _subject: "Nuevo Lead: Spark Monitor" })
+                    body: JSON.stringify({ email: correo, mensaje: "Nuevo registro en Spark Monitor V2" })
                 });
 
                 if (respuestaEnvio.ok) {
@@ -146,8 +146,9 @@
             }
         });
 
-        // Inicializar
+        // Inicializar inmediatamente al cargar la página
         actualizarDashboard();
+        // Recargar cada 6 segundos
         setInterval(actualizarDashboard, 6000);
     </script>
 </body>
