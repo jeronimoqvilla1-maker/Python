@@ -63,7 +63,7 @@
         const cajaRegistro = document.getElementById('caja-registro');
         const botonEnviar = document.getElementById('btn-enviar');
 
-        // URL de Formspree inyectada directamente
+        // Tu link real de Formspree
         const FORMSPREE_URL = "https://formspree.io/f/xgobgnyy";
 
         let precioAnterior = 0;
@@ -91,7 +91,7 @@
             return `[Reporte Automático] El precio se encuentra en $${precioActual.toLocaleString()} USD, ${tendencia} Análisis algorítmico: ${recomendacion}`;
         }
 
-        // 2. CONSULTA EN TIEMPO REAL (Optimizada con la API ultra-estable de Binance)
+        // 2. CONSULTA EN TIEMPO REAL (Binance)
         async function actualizarDashboard() {
             try {
                 elementoEstado.innerText = "🔄 PROCESANDO...";
@@ -113,10 +113,14 @@
             }
         }
 
-        // 3. ENVÍO DE DATOS REALES POR API
+        // 3. ENVÍO DE DATOS REALES POR API ENRIQUECIDA
         formulario.addEventListener('submit', async function(e) {
             e.preventDefault();
             const correo = document.getElementById('correo-usuario').value;
+            
+            // 🚨 AQUÍ ESTÁ EL TRUCO: Capturamos lo que hay en pantalla antes de enviar
+            const precioCapturado = elementoPrecio.innerText;
+            const reporteIaCapturado = elementoIA.innerText;
             
             botonEnviar.innerText = "⚡ CONECTANDO SERVIDOR...";
             botonEnviar.disabled = true;
@@ -125,7 +129,13 @@
                 const respuestaEnvio = await fetch(FORMSPREE_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ email: correo, mensaje: "Nuevo registro en Spark Monitor V2" })
+                    // Metemos el precio y el reporte de la IA dentro del paquete JSON
+                    body: JSON.stringify({ 
+                        email: correo, 
+                        _subject: `🔥 ¡Nuevo Lead Premium! BTC: ${precioCapturado}`, 
+                        precio_de_registro: precioCapturado,
+                        analisis_ia_enviado: reporteIaCapturado
+                    })
                 });
 
                 if (respuestaEnvio.ok) {
@@ -146,9 +156,7 @@
             }
         });
 
-        // Inicializar inmediatamente al cargar la página
         actualizarDashboard();
-        // Recargar cada 6 segundos
         setInterval(actualizarDashboard, 6000);
     </script>
 </body>
