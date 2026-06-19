@@ -3,94 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Inteligente - Spark Monitor</title>
+    <title>Spark Monitor - Executive Dashboard</title>
     <style>
         body { background-color: #0d0e15; color: #ffffff; font-family: sans-serif; text-align: center; padding: 20px; transition: background 0.5s ease; }
-        .tarjeta { background: #161824; border: 1px solid #00ffcc; padding: 30px; border-radius: 12px; display: inline-block; max-width: 500px; box-shadow: 0px 0px 20px rgba(0, 255, 204, 0.2); }
-        h1 { color: #00ffcc; margin-bottom: 5px; }
-        .precio-contenedor { margin: 25px 0; }
-        .precio { font-size: 42px; color: #fffb00; font-weight: bold; }
-        .estado { color: #00ffcc; font-size: 14px; font-weight: bold; }
+        .tarjeta { background: #161824; border: 1px solid #00ffcc; padding: 30px; border-radius: 12px; display: inline-block; max-width: 500px; text-align: left; box-shadow: 0px 0px 20px rgba(0, 255, 204, 0.1); }
+        h1 { color: #00ffcc; margin: 0 0 5px 0; text-align: center; }
+        .sub { color: #888; text-align: center; margin-bottom: 20px; font-size: 14px; }
+        .precio-box { text-align: center; background: #1f2235; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px; }
+        .precio { font-size: 38px; color: #fffb00; font-weight: bold; margin: 5px 0; }
+        .estado { color: #00ffcc; font-size: 12px; font-weight: bold; }
         
-        /* Nuevos estilos para el panel de control */
-        .panel-control { background: #1f2235; padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid #444; }
-        input { background: #0d0e15; border: 1px solid #00ffcc; padding: 8px; color: white; border-radius: 4px; text-align: center; width: 60%; font-size: 16px; }
-        label { display: block; font-size: 12px; color: #aaa; margin-bottom: 5px; text-transform: uppercase; }
+        /* Sección de IA */
+        .seccion-ia { background: rgba(0, 255, 204, 0.05); border: 1px dashed #00ffcc; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .ia-titulo { color: #00ffcc; font-weight: bold; font-size: 14px; margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
         
-        /* Estado de Alerta Alarma */
-        .alerta-activa { background-color: #550011 !important; }
-        .tarjeta-alerta { border-color: #ff0055 !important; box-shadow: 0px 0px 20px rgba(255, 0, 85, 0.4) !important; }
+        /* Sección de Formulario (Lead Capture) */
+        .formulario-box { background: #1f2235; padding: 20px; border-radius: 8px; border: 1px solid #444; }
+        .form-titulo { font-size: 14px; color: #fff; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        input[type="email"] { background: #0d0e15; border: 1px solid #00ffcc; padding: 10px; color: white; border-radius: 4px; width: 91%; margin-bottom: 10px; font-size: 14px; }
+        button { background: #00ffcc; color: #0d0e15; border: none; padding: 10px; font-weight: bold; border-radius: 4px; width: 100%; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        button:hover { background: #fffb00; }
+
+        .alerta-activa { background-color: #400c16 !important; }
     </style>
 </head>
 <body>
 
     <div id="mi-tarjeta" class="tarjeta">
         <h1>📊 SPARK MONITOR PRO</h1>
-        <p style="color: #888; margin-top: 0;">Sistema de Alertas Tempranas</p>
-        <hr style="border-color: #00ffcc; opacity: 0.3;">
+        <p class="sub">Sistemas Autónomos de Próxima Generación</p>
         
-        <div class="precio-contenedor">
-            <label>Precio Bitcoin en Vivo (USD)</label>
-            <p id="precio-btc" class="precio">Cargando...</p> 
-            <p id="estado-actualizacion" class="estado">🟢 CONECTADO</p>
+        <div class="precio-box">
+            <span style="color: #aaa; font-size: 12px; text-transform: uppercase;">Bitcoin (USD)</span>
+            <p id="precio-btc" class="precio">Cargando...</p>
+            <span id="estado-actualizacion" class="estado">🟢 CONECTADO</span>
         </div>
 
-        <div class="panel-control">
-            <label for="precio-limite">🚨 Alerta si el precio cae de:</label>
-            <input type="number" id="precio-limite" value="60000" placeholder="Ej: 65000">
+        <div class="seccion-ia">
+            <div class="ia-titulo">🤖 CORE-AI ANALYTICS:</div>
+            <p id="ia-reporte" style="color: #ddd; font-size: 13px; margin: 0; line-height: 1.4;">
+                Iniciando redes neuronales... Analizando bloques de mercado...
+            </p>
+        </div>
+
+        <div class="formulario-box" id="caja-registro">
+            <div class="form-titulo">📩 Suscríbete a Alertas Premium</div>
+            <p style="color: #aaa; font-size: 12px; margin-top: 0;">Deja tu correo para recibir un aviso al celular si el mercado colapsa.</p>
+            
+            <form id="form-cliente">
+                <input type="email" id="correo-usuario" placeholder="tu-correo@gmail.com" required>
+                <button type="submit">Activar Alertas de Inversión</button>
+            </form>
         </div>
     </div>
 
     <script>
         const elementoPrecio = document.getElementById('precio-btc');
         const elementoEstado = document.getElementById('estado-actualizacion');
-        const elementoLimite = document.getElementById('precio-limite');
-        const tarjeta = document.getElementById('mi-tarjeta');
-        const cuerpoWeb = document.body;
+        const elementoIA = document.getElementById('ia-reporte');
+        const formulario = document.getElementById('form-cliente');
+        const cajaRegistro = document.getElementById('caja-registro');
 
-        let precioNumericoActual = 0;
+        let precioAnterior = 0;
 
-        async function actualizarPrecio() {
+        // 1. MOTOR DE INTELIGENCIA ARTIFICIAL INTERNO
+        function generarAnalisisIA(precioActual) {
+            let tendencia = "";
+            let recomendacion = "";
+            
+            if (precioAnterior === 0) {
+                tendencia = "estabilizándose en rangos óptimos.";
+                recomendacion = "Mantener posiciones estables y observar zonas de liquidez.";
+            } else if (precioActual > precioAnterior) {
+                tendencia = "con un impulso alcista de alta velocidad.";
+                recomendacion = "⚠️ Alerta de FOMO. Buen momento para asegurar ganancias parciales.";
+            } else if (precioActual < precioAnterior) {
+                tendencia = "experimentando una corrección técnica de ballenas.";
+                recomendacion = "🛑 Zona de descuento. Monitorear soportes clave antes de buscar entradas.";
+            } else {
+                tendencia = "en consolidación lateral comprimida.";
+                recomendacion = "Baja volatilidad. El mercado está acumulando energía para el siguiente quiebre.";
+            }
+
+            precioAnterior = precioActual;
+
+            // Retornamos el texto formateado que simula la respuesta de la IA
+            return `[Reporte Automático] El precio de Bitcoin se encuentra en $${precioActual.toLocaleString()} USD, ${tendencia} Análisis algorítmico sugiere: ${recomendacion}`;
+        }
+
+        // 2. CONEXIÓN A LA API FINANCIERA
+        async function actualizarDashboard() {
             try {
-                elementoEstado.innerText = "🔄 COMPROBANDO...";
-                
+                elementoEstado.innerText = "🔄 PROCESANDO...";
                 const respuesta = await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot');
                 const datos = await respuesta.json();
-                
-                // Guardamos el precio crudo en una variable para hacer matemáticas
-                precioNumericoActual = parseFloat(datos.data.amount);
-                
-                // Lo formateamos bonito para mostrar en pantalla
-                elementoPrecio.innerText = `$${precioNumericoActual.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
-                
+                const precioNumerico = parseFloat(datos.data.amount);
+
+                // Actualizar precio en pantalla
+                elementoPrecio.innerText = `$${precioNumerico.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
                 elementoEstado.innerText = "🟢 EN VIVO";
                 elementoEstado.style.color = "#00ffcc";
 
-                // --- AQUÍ ESTÁ LA LÓGICA DE NEGOCIO (IF / ELSE) ---
-                const limiteUsuario = parseFloat(elementoLimite.value);
-
-                if (precioNumericoActual < limiteUsuario) {
-                    // SI el precio es menor al límite: ACTIVAR ALARMA (Pantalla roja)
-                    cuerpoWeb.classList.add('alerta-activa');
-                    tarjeta.classList.add('tarjeta-alerta');
-                    elementoEstado.innerText = "🚨 ¡ALERTA: PRECIO BAJO CRÍTICO!";
-                    elementoEstado.style.color = "#ff0055";
-                } else {
-                    // SI NO: Todo normal (Mantener colores neón originales)
-                    cuerpoWeb.classList.remove('alerta-activa');
-                    tarjeta.classList.remove('tarjeta-alerta');
-                }
+                // Ejecutar la IA con los nuevos datos
+                const informeFinal = generarAnalisisIA(precioNumerico);
+                elementoIA.innerText = informeFinal;
 
             } catch (error) {
-                elementoPrecio.innerText = "Error de conexión";
-                elementoEstado.innerText = "❌ ERROR";
+                elementoPrecio.innerText = "Error de Red";
+                elementoEstado.innerText = "❌ DESCONECTADO";
                 elementoEstado.style.color = "#ff0055";
             }
         }
 
-        // Ejecutar al abrir y repetir cada 5 segundos
-        actualizarPrecio();
-        setInterval(actualizarPrecio, 5000);
+        // 3. CAPTURA DE DATOS DEL CLIENTE (BASE DE DATOS LOCAL)
+        formulario.addEventListener('submit', function(e) {
+            e.preventDefault(); // Evita que la página se recargue
+            const correo = document.getElementById('correo-usuario').value;
+
+            // Guardamos el correo en la memoria del navegador (Simulación de DB)
+            localStorage.setItem('cliente_premium', correo);
+
+            // Cambiamos la interfaz para darle las gracias al cliente
+            cajaRegistro.innerHTML = `
+                <div style="text-align: center; color: #00ffcc; font-weight: bold; font-size: 14px;">
+                    ✅ ¡CONEXIÓN EXITOSA!<br>
+                    <span style="color: #fff; font-size: 12px; font-weight: normal;">
+                        El correo <strong>${correo}</strong> ha sido registrado en el nodo de Spark Monitor.
+                    </span>
+                </div>
+            `;
+        });
+
+        // Inicializar y repetir cada 6 segundos
+        actualizarDashboard();
+        setInterval(actualizarDashboard, 6000);
     </script>
 </body>
 </html>
