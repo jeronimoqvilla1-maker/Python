@@ -3,56 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Bitcoin en Vivo</title>
+    <title>Dashboard Inteligente - Spark Monitor</title>
     <style>
-        body { background-color: #0d0e15; color: #ffffff; font-family: sans-serif; text-align: center; padding: 20px; }
+        body { background-color: #0d0e15; color: #ffffff; font-family: sans-serif; text-align: center; padding: 20px; transition: background 0.5s ease; }
         .tarjeta { background: #161824; border: 1px solid #00ffcc; padding: 30px; border-radius: 12px; display: inline-block; max-width: 500px; box-shadow: 0px 0px 20px rgba(0, 255, 204, 0.2); }
-        h1 { color: #00ffcc; margin-bottom: 5px; letter-spacing: 1px; }
+        h1 { color: #00ffcc; margin-bottom: 5px; }
         .precio-contenedor { margin: 25px 0; }
-        .precio { font-size: 42px; color: #fffb00; font-weight: bold; transition: all 0.3s ease; }
+        .precio { font-size: 42px; color: #fffb00; font-weight: bold; }
         .estado { color: #00ffcc; font-size: 14px; font-weight: bold; }
-        .alerta { background: rgba(0, 255, 204, 0.1); border-left: 4px solid #00ffcc; padding: 10px; border-radius: 4px; font-size: 13px; text-align: left; margin-top: 20px; }
+        
+        /* Nuevos estilos para el panel de control */
+        .panel-control { background: #1f2235; padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid #444; }
+        input { background: #0d0e15; border: 1px solid #00ffcc; padding: 8px; color: white; border-radius: 4px; text-align: center; width: 60%; font-size: 16px; }
+        label { display: block; font-size: 12px; color: #aaa; margin-bottom: 5px; text-transform: uppercase; }
+        
+        /* Estado de Alerta Alarma */
+        .alerta-activa { background-color: #550011 !important; }
+        .tarjeta-alerta { border-color: #ff0055 !important; box-shadow: 0px 0px 20px rgba(255, 0, 85, 0.4) !important; }
     </style>
 </head>
 <body>
 
-    <div class="tarjeta">
-        <h1>📊 SPARK MONITOR</h1>
-        <p style="color: #888; margin-top: 0;">Control de Activos en Tiempo Real</p>
+    <div id="mi-tarjeta" class="tarjeta">
+        <h1>📊 SPARK MONITOR PRO</h1>
+        <p style="color: #888; margin-top: 0;">Sistema de Alertas Tempranas</p>
         <hr style="border-color: #00ffcc; opacity: 0.3;">
         
         <div class="precio-contenedor">
-            <p style="margin: 0; color: #aaa; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;">Precio Bitcoin (USD)</p>
+            <label>Precio Bitcoin en Vivo (USD)</label>
             <p id="precio-btc" class="precio">Cargando...</p> 
             <p id="estado-actualizacion" class="estado">🟢 CONECTADO</p>
         </div>
 
-        <div class="alerta">
-            <strong>🧠 Análisis de IA (Simulado):</strong> 
-            <span style="color: #ddd;">El mercado presenta alta liquidez en este rango. Excelente momento para monitoreo de operaciones automatizadas.</span>
+        <div class="panel-control">
+            <label for="precio-limite">🚨 Alerta si el precio cae de:</label>
+            <input type="number" id="precio-limite" value="60000" placeholder="Ej: 65000">
         </div>
     </div>
 
     <script>
         const elementoPrecio = document.getElementById('precio-btc');
         const elementoEstado = document.getElementById('estado-actualizacion');
+        const elementoLimite = document.getElementById('precio-limite');
+        const tarjeta = document.getElementById('mi-tarjeta');
+        const cuerpoWeb = document.body;
 
-        // Función que va a internet y trae el precio fresco
+        let precioNumericoActual = 0;
+
         async function actualizarPrecio() {
             try {
-                elementoEstado.innerText = "🔄 ACTUALIZANDO...";
-                elementoEstado.style.color = "#fffb00";
-
-                // Consultamos la API de Coinbase directamente desde el navegador
+                elementoEstado.innerText = "🔄 COMPROBANDO...";
+                
                 const respuesta = await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot');
                 const datos = await respuesta.json();
-                const precio = parseFloat(datos.data.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-                // Inyectamos el precio en la página web
-                elementoPrecio.innerText = `$${precio} USD`;
+                
+                // Guardamos el precio crudo en una variable para hacer matemáticas
+                precioNumericoActual = parseFloat(datos.data.amount);
+                
+                // Lo formateamos bonito para mostrar en pantalla
+                elementoPrecio.innerText = `$${precioNumericoActual.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
                 
                 elementoEstado.innerText = "🟢 EN VIVO";
                 elementoEstado.style.color = "#00ffcc";
+
+                // --- AQUÍ ESTÁ LA LÓGICA DE NEGOCIO (IF / ELSE) ---
+                const limiteUsuario = parseFloat(elementoLimite.value);
+
+                if (precioNumericoActual < limiteUsuario) {
+                    // SI el precio es menor al límite: ACTIVAR ALARMA (Pantalla roja)
+                    cuerpoWeb.classList.add('alerta-activa');
+                    tarjeta.classList.add('tarjeta-alerta');
+                    elementoEstado.innerText = "🚨 ¡ALERTA: PRECIO BAJO CRÍTICO!";
+                    elementoEstado.style.color = "#ff0055";
+                } else {
+                    // SI NO: Todo normal (Mantener colores neón originales)
+                    cuerpoWeb.classList.remove('alerta-activa');
+                    tarjeta.classList.remove('tarjeta-alerta');
+                }
+
             } catch (error) {
                 elementoPrecio.innerText = "Error de conexión";
                 elementoEstado.innerText = "❌ ERROR";
@@ -60,10 +88,8 @@
             }
         }
 
-        // Ejecutamos la función apenas se abra la página
+        // Ejecutar al abrir y repetir cada 5 segundos
         actualizarPrecio();
-
-        // REPETIDOR: Hace que la función se ejecute sola cada 5 segundos (5000 milisegundos)
         setInterval(actualizarPrecio, 5000);
     </script>
 </body>
